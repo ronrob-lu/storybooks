@@ -9,34 +9,6 @@ local modname = core.get_current_modname and core.get_current_modname() or "book
 local modpath = core.get_modpath and core.get_modpath(modname) or "."
 
 -- Convert markdown formatting to Minetest hypertext tags
-local function format_markdown_to_hypertext(text)
-	if not text then return "" end
-
-	local lines = {}
-	for raw_line in text:gmatch("([^\r\n]*)\r?\n?") do
-		local line = raw_line
-		if line:sub(1, 2) == "# " then
-			local header = line:sub(3)
-			line = "<style font_size=20 color=#660000><b>" .. header .. "</b></style>"
-		elseif line:sub(1, 3) == "## " then
-			local header = line:sub(4)
-			line = "<style font_size=17 color=#441100><b>" .. header .. "</b></style>"
-		elseif line:sub(1, 4) == "### " then
-			local header = line:sub(5)
-			line = "<style font_size=15 color=#332211><b>" .. header .. "</b></style>"
-		end
-
-		-- Convert bold **text** to <b>text</b>
-		line = line:gsub("%*%*(.-)%*%*", "<b>%1</b>")
-		-- Convert italic *text* to <i>text</i>
-		line = line:gsub("%*(.-)%*", "<i>%1</i>")
-
-		table.insert(lines, line)
-	end
-
-	return table.concat(lines, "\n")
-end
-
 -- Read file contents
 local function read_file(filepath)
 	local file, err = io.open(filepath, "r")
@@ -85,8 +57,7 @@ local function parse_book_file(content, fallback_title)
 
 	local pages = {}
 	for _, page_text in ipairs(page_chunks) do
-		local formatted = format_markdown_to_hypertext(page_text)
-		table.insert(pages, formatted)
+		table.insert(pages, page_text)
 	end
 
 	return title, pages
@@ -104,7 +75,7 @@ function books.get_formspec(book_data, page)
 	local formspec = "size[12,9]" ..
 		"background[0,0;12,9;books_bg.png;true]" ..
 		"label[0.8,0.5;" .. escaped_title .. "]" ..
-		"hypertext[0.8,1.2;10.4,6.5;book_content;<global font_size=16 color=#2b1d0c>" .. escaped_content .. "]"
+		"textarea[0.8,1.2;10.4,6.5;;;" .. escaped_content .. "]"
 
 	if total_pages > 1 then
 		formspec = formspec ..

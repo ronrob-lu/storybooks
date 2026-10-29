@@ -10,8 +10,8 @@ Transform your Minetest / Luanti worlds into immersive libraries and rich story-
 
 - 📖 **Read-Only Inventory Items**: 8 unique book items with distinct closed book cover icons. Books are inventory items (craftitems) designed for reading and collection.
 - 📝 **Markdown-Powered Library**: Automatically reads `.md` files directly from the `books/` directory and converts them into read-only in-game books!
-- 🎨 **Rich Text Formatting**: Native support for Markdown headers (`#`, `##`, `###`), **bold**, and *italic* styling mapped directly to custom Minetest hypertext tags.
 - 📑 **Multi-Page Reader GUI**: Clean, interactive book reading interface with background textures and seamless previous/next page navigation.
+- ✂️ **Selectable Text**: Text inside the books can be easily selected and copied.
 - 🎒 **Automatic Starter Distribution**: Automatically provides registered books into the inventory of joining players so nobody misses the adventure.
 - 🛠️ **Fully Customizable**: Adding a new book is as simple as placing a new `.md` file in the `books/` folder!
 
