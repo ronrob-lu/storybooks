@@ -131,13 +131,23 @@ end
 -- Initialize books from books/ directory
 local function load_books_from_folder()
 	local books_dir = modpath .. "/books"
+	local textures_dir = modpath .. "/textures"
 	local file_list = {}
+	local texture_count = 0
 
 	if core.get_dir_list then
 		local dir_files = core.get_dir_list(books_dir, false) or {}
 		for _, fname in ipairs(dir_files) do
 			if fname:match("%.md$") or fname:match("%.txt$") then
 				table.insert(file_list, fname)
+			end
+		end
+
+		-- Count available book textures
+		local tex_files = core.get_dir_list(textures_dir, false) or {}
+		for _, fname in ipairs(tex_files) do
+			if fname:match("^Book%d+_Closed%.png$") then
+				texture_count = texture_count + 1
 			end
 		end
 	end
@@ -150,6 +160,10 @@ local function load_books_from_folder()
 		}
 	end
 
+	if texture_count == 0 then
+		texture_count = 8
+	end
+
 	table.sort(file_list)
 
 	local register_item_fn = core.register_craftitem or (minetest and minetest.register_craftitem) or core.register_item
@@ -160,11 +174,12 @@ local function load_books_from_folder()
 
 		if content then
 			local num_in_name = fname:match("book_(%d+)")
-			local tex_idx = num_in_name and tonumber(num_in_name) or idx
+			local parsed_idx = num_in_name and tonumber(num_in_name) or idx
+			local tex_idx = ((parsed_idx - 1) % texture_count) + 1
 
 			local book_id = fname:gsub("%..+$", "")
 			local item_name = "books:" .. book_id
-			local fallback_title = "Book " .. tex_idx
+			local fallback_title = "Book " .. parsed_idx
 			local title, pages = parse_book_file(content, fallback_title)
 
 			local texture_name = "Book" .. tex_idx .. "_Closed.png"
