@@ -1,5 +1,5 @@
 -- Mod: books
--- Read-only 3D books initialized from books/ folder and given on player join
+-- Read-only books initialized from books/ folder and given on player join
 
 books = {}
 books.registered_books = {}
@@ -188,66 +188,45 @@ local function load_books_from_folder()
 
 	-- Fallback list if get_dir_list is empty or unavailable
 	if #file_list == 0 then
-		file_list = {"book_1.md", "book_2.md", "book_3.md", "book_4.md"}
+		file_list = {
+			"book_1.md", "book_2.md", "book_3.md", "book_4.md",
+			"book_5.md", "book_6.md", "book_7.md", "book_8.md"
+		}
 	end
 
 	table.sort(file_list)
+
+	local register_item_fn = core.register_craftitem or (minetest and minetest.register_craftitem) or core.register_item
 
 	for idx, fname in ipairs(file_list) do
 		local filepath = books_dir .. "/" .. fname
 		local content = read_file(filepath)
 
 		if content then
-			-- Map file index to model index (1..4)
-			local model_idx = ((idx - 1) % 4) + 1
-			-- Check if filename has specific number (e.g., book_3.md -> 3)
 			local num_in_name = fname:match("book_(%d+)")
-			if num_in_name then
-				model_idx = tonumber(num_in_name)
-				if model_idx < 1 or model_idx > 4 then
-					model_idx = ((model_idx - 1) % 4) + 1
-				end
-			end
+			local tex_idx = num_in_name and tonumber(num_in_name) or idx
 
 			local book_id = fname:gsub("%..+$", "")
 			local item_name = "books:" .. book_id
-			local fallback_title = "Book " .. model_idx
+			local fallback_title = "Book " .. tex_idx
 			local title, pages = parse_book_file(content, fallback_title)
 
-			local mesh_name = "Book" .. model_idx .. "_Closed.obj"
-			local texture_name = "Book" .. model_idx .. "_Closed.png"
+			local texture_name = "Book" .. tex_idx .. "_Closed.png"
 
 			books.registered_books[item_name] = {
 				id = book_id,
 				title = title,
 				content = content,
 				pages = pages,
-				model_idx = model_idx,
-				mesh = mesh_name,
 				texture = texture_name
 			}
 
-			if core.register_node then
-				core.register_node(item_name, {
+			if register_item_fn then
+				register_item_fn(item_name, {
 					description = title,
-					drawtype = "mesh",
-					mesh = mesh_name,
-					tiles = { texture_name },
 					inventory_image = texture_name,
 					wield_image = texture_name,
-					paramtype = "light",
-					paramtype2 = "facedir",
-					sunlight_propagates = true,
-					walkable = false,
-					selection_box = {
-						type = "fixed",
-						fixed = {-0.3, -0.5, -0.3, 0.3, -0.3, 0.3}
-					},
-					node_box = {
-						type = "fixed",
-						fixed = {-0.3, -0.5, -0.3, 0.3, -0.3, 0.3}
-					},
-					groups = {oddly_breakable_by_hand = 3, book = 1, read_only_book = 1},
+					groups = {book = 1, read_only_book = 1},
 					_read_only = true,
 
 					on_use = function(itemstack, user, pointed_thing)
@@ -257,9 +236,9 @@ local function load_books_from_folder()
 						return itemstack
 					end,
 
-					on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
-						if clicker and clicker:is_player() then
-							books.show_book(clicker, item_name, 1)
+					on_secondary_use = function(itemstack, user, pointed_thing)
+						if user and user:is_player() then
+							books.show_book(user, item_name, 1)
 						end
 						return itemstack
 					end,
