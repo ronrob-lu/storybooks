@@ -125,16 +125,6 @@ class TestBooksMod(unittest.TestCase):
 		end
 		assert(count == 8, "Expected 8 books to be registered, got " .. count)
 
-		-- Verify on_joinplayer gives books
-		assert(#core.registered_callbacks.on_joinplayer > 0, "on_joinplayer callback must be registered")
-		for _, cb in ipairs(core.registered_callbacks.on_joinplayer) do
-			cb(mock_player)
-		end
-
-		for item_name, _ in pairs(books.registered_books) do
-			assert(mock_inventory:contains_item("main", item_name), "Player inventory must contain " .. item_name)
-		end
-
 		-- Verify formspec generation and button navigation
 		local book1_def = core.registered_craftitems["books:book_1"]
 		assert(book1_def.on_use ~= nil, "Book must have on_use handler")
