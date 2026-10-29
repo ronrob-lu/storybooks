@@ -128,21 +128,6 @@ if core.register_on_player_receive_fields then
 	end)
 end
 
--- Register on_joinplayer callback to give books to joining players
-if core.register_on_joinplayer then
-	core.register_on_joinplayer(function(player)
-		if not player then return end
-		local inv = player:get_inventory()
-		if not inv then return end
-
-		for item_name, _ in pairs(books.registered_books) do
-			if not inv:contains_item("main", item_name) then
-				inv:add_item("main", item_name)
-			end
-		end
-	end)
-end
-
 -- Initialize books from books/ directory
 local function load_books_from_folder()
 	local books_dir = modpath .. "/books"
