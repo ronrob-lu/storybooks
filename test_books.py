@@ -11,6 +11,13 @@ class TestBooksMod(unittest.TestCase):
 			content = f.read()
 		self.assertIn("name = books", content, "mod.conf must define name = books")
 
+		self.assertTrue(os.path.exists("README.md"), "README.md does not exist")
+		self.assertTrue(os.path.exists("LICENSE.md"), "LICENSE.md does not exist")
+		with open("LICENSE.md", "r") as f:
+			lic_content = f.read()
+		self.assertIn("ronrob-lu", lic_content, "LICENSE.md must contain copyright holder ronrob-lu")
+		self.assertIn("2026", lic_content, "LICENSE.md must contain year 2026")
+
 	def test_02_assets_exist(self):
 		# Check textures
 		for i in range(1, 5):
