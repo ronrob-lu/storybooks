@@ -73,6 +73,8 @@ function books.get_formspec(book_data, page)
 	local escaped_content = core.formspec_escape and core.formspec_escape(content) or content
 
 	local formspec = "size[12,9]" ..
+		"style_type[label;textcolor=#111111]" ..
+		"style_type[textarea;textcolor=#111111]" ..
 		"background[0,0;12,9;books_bg.png;true]" ..
 		"label[0.8,0.5;" .. escaped_title .. "]" ..
 		"textarea[0.8,1.2;10.4,6.5;;;" .. escaped_content .. "]"
